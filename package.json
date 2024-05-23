@@ -1,0 +1,13 @@
+{
+  "name": "production-calculator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "start cmd /k npm run start:frontend && npm run start:backend",
+    "start:backend": "cd backend && npm run dev",
+    "start:frontend": "cd frontend && npm run dev"
+  },
+  "author": "",
+  "license": "ISC"
+}

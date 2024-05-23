@@ -1,0 +1,26 @@
+[
+    {
+        "name": "Macarrão Cozido",
+        "quantity": 500,
+        "unity": "grams",
+        "cost": 3.75,
+        "profit": 0,
+        "items": [
+            {
+                "_id": "65ce737eaa224350a572a8fc",
+                "quantity": 500,
+                "unity": "grams"
+            },
+            {
+                "_id": "65ce737eaa224350a572a8fd",
+                "quantity": 2,
+                "unity": "grams"
+            },
+            {
+                "_id": "65ce737eaa224350a572a900",
+                "quantity": 5000,
+                "unity": "ml"
+            }
+        ]
+    }
+]

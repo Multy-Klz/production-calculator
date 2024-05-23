@@ -1,0 +1,63 @@
+[
+  {
+    "constants": {
+      "units": [
+        {
+          "name": "Unidade",
+          "symbol": "un"
+        }
+      ]
+    }
+  },
+  {
+    "massa": {
+      "units": [
+        {
+          "name": "Gramas",
+          "symbol": "g"
+        },
+        {
+          "name": "Quilogramas",
+          "symbol": "kg"
+        },
+        {
+          "name": "Miligramas",
+          "symbol": "mg"
+        }
+      ],
+      "convertion": {
+        "g": 1,
+        "kg": 0.001,
+        "mg": 1000
+      }
+    }
+  },
+  {
+    "volume": {
+      "units": [
+        {
+          "name": "Litros",
+          "symbol": "l"
+        },
+        {
+          "name": "Mililitros",
+          "symbol": "ml"
+        },
+        {
+          "name": "cm³",
+          "symbol": "cm³"
+        },
+        {
+          "name": "m³",
+          "symbol": "m³"
+        }
+      ],
+      "convertion": {
+        "l": 1,
+        "ml": 0.001,
+        "cm³": 1000,
+        "m³": 0.000001
+      }
+    }
+  }
+]
