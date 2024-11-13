@@ -3,13 +3,25 @@ import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
+import DeletePopup from "./DeletePopup";
 
-function ShowRecipe({ recipe, setIsOpen }) {
+function ShowRecipe({
+  recipe,
+  setIsOpen,
+  deleteRecipe,
+  setDelete,
+  objectToDelete,
+  param,
+}) {
   const [items, setItems] = useState([]);
 
   function closeWindow() {
     setIsOpen(false);
   }
+
+  const handleDelete = async (recipe) => {
+    setDelete(true);
+  };
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -35,7 +47,10 @@ function ShowRecipe({ recipe, setIsOpen }) {
         <button className="bg-blue-500 text-white m-2">
           <FontAwesomeIcon icon={faPencil} className="  px-2" />
         </button>
-        <button className="bg-red-500 text-white m-2">
+        <button
+          className="bg-red-500 text-white m-2"
+          onClick={() => handleDelete(recipe)}
+        >
           <FontAwesomeIcon icon={faTrash} className="  px-2" />
         </button>
       </div>
@@ -58,12 +73,16 @@ function ShowRecipe({ recipe, setIsOpen }) {
         </p>
       </div>
 
-      {/* {edit ? <EditItem item={item} setModal={changeModal} /> : ""}
-      {deleteItem ? (
-        <DeletePopup setDeleteItem={setDeleteItem} item={item} />
+      {deleteRecipe ? (
+        <DeletePopup
+          setDelete={setDeleteRecipe}
+          objectToDelete={recipe}
+          param={"deleterecipe"}
+          closeWindow={closeWindow}
+        />
       ) : (
         ""
-      )} */}
+      )}
     </div>
   );
 }

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import unityData from "./../assets/unityData.json";
-import newUnity from "./../assets/units.json";
+import unityData from "./../assets/units.json";
 import Message from "./Message.jsx";
 
 function CreateItem(props) {
@@ -9,7 +8,7 @@ function CreateItem(props) {
   const [name, setName] = useState(null);
 
   const [inputValue, setInputValue] = useState("");
-  const [filteredUnits, setFilteredUnits] = useState([]);
+  const [unitiesToDisplay, setUnitiesToDisplay] = useState([]);
 
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
@@ -24,13 +23,25 @@ function CreateItem(props) {
     const value = event.target.value;
     setInputValue(value);
     if (value) {
-      const newFilteredUnits = units.filter((unit) =>
+      //TODO: implementar lógica para testar novo arquivo de unidades
+      let allUnits = [];
+
+      units.forEach((unitType) => {
+        Object.keys(unitType).forEach((key) => {
+          console.log(key, unitType[key].units, unitType[key].convertion);
+
+          const unityNames = unitType[key].units.map((unit) => unit.name);
+          allUnits.push(...unityNames);
+        });
+      });
+
+      const FilteredUnits = allUnits.filter((unit) =>
         unit.toLowerCase().includes(value.toLowerCase())
       );
-      //TODO: implementar lógica para testar novo arquivo de unidades
-      setFilteredUnits(newFilteredUnits);
+
+      setUnitiesToDisplay(FilteredUnits);
     } else {
-      setFilteredUnits([]);
+      setUnitiesToDisplay([]);
     }
   };
 
@@ -139,7 +150,7 @@ function CreateItem(props) {
                   />
                   <div className="absolute mr-5 w-full top-0   mt-10 bg-white rounded-md shadow-lg ">
                     {!unity
-                      ? filteredUnits.map((unit) => (
+                      ? unitiesToDisplay.map((unit) => (
                           <div
                             key={unit}
                             className="p-2 hover:bg-gray-200 cursor-pointer"

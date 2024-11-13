@@ -8,8 +8,8 @@ import ShowRecipe from "./ShowRecipe";
 
 function RecipesTable({ recipes }) {
   const [edit, setEdit] = useState(false);
-  const [item, setItem] = useState(null);
-  const [deleteItem, setDeleteItem] = useState(false);
+
+  const [deleteRecipe, setDeleteRecipe] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [recipe, setRecipe] = useState(null);
 
@@ -17,6 +17,10 @@ function RecipesTable({ recipes }) {
     setIsOpen(!isOpen);
     setRecipe(recipe);
   }
+
+  const handleDelete = async (item) => {
+    setDeleteRecipe(true);
+  };
 
   return (
     <div className="recipes-container flex justify-center p-5">
@@ -56,7 +60,11 @@ function RecipesTable({ recipes }) {
                           <FontAwesomeIcon icon={faPencil} className="  px-2" />
                         </button>
                         <button className="bg-red-500 text-white px-2 py-1">
-                          <FontAwesomeIcon icon={faTrash} className="  px-2" />
+                          <FontAwesomeIcon
+                            icon={faTrash}
+                            onClick={() => handleDelete(recipe)}
+                            className="  px-2"
+                          />
                         </button>
                       </div>
                     </td>
@@ -65,7 +73,23 @@ function RecipesTable({ recipes }) {
             </tbody>
           </table>
         ) : (
-          <ShowRecipe recipe={recipe} setIsOpen={setIsOpen} />
+          <ShowRecipe
+            recipe={recipe}
+            setIsOpen={setIsOpen}
+            setDelete={setDeleteRecipe}
+            objectToDelete={recipe}
+            param={"deleterecipe"}
+          />
+        )}
+        {deleteRecipe ? (
+          <DeletePopup
+            deleteRecipe={deleteRecipe}
+            setDelete={setDeleteRecipe}
+            objectToDelete={recipe}
+            param={"deleterecipe"}
+          />
+        ) : (
+          ""
         )}
       </div>
     </div>

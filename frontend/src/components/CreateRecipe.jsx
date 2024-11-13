@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import unityData from "./../assets/unityData.json";
+import unityData from "./../assets/units.json";
 import Message from "./Message.jsx";
 import { faYinYang } from "@fortawesome/free-solid-svg-icons";
 
@@ -18,17 +18,29 @@ function CreateRecipe(props) {
   const [unity, setUnity] = useState("");
   const units = unityData;
 
-  const [unitIngredients, setUnitIngredients] = useState(unityData); // [ {id: "id", quantity: 0, unity: "kg"}
+  const [convertionData, setConvertionData] = useState([]);
+
+  const [unitIngredients, setUnitIngredients] = useState([]); // [ {id: "id", quantity: 0, unity: "kg"}
   const [ingredients, setIngredients] = useState([]); // [ {id: "id", quantity: 0, unity: "kg"}
   const [ingredient, setIngredient] = useState({
     _id: "",
     name: "",
   });
-  const [ingredientUnity, setIngredientUnity] = useState("");
+  const [ingredientUnity, setIngredientUnity] = useState(null);
   const [ingredientQuantity, setIngredientQuantity] = useState(0);
 
   const [ingredientsList, setIngredientList] = useState(null);
   const [newIngredient, setNewIngredient] = useState(false);
+
+  function getConvertionData() {
+    let convertions = [];
+    units.forEach((unit) =>
+      Object.keys(unit).forEach((key) => {
+        unit[key].convertion ? convertions.push(unit[key].convertion) : null;
+      })
+    );
+    setConvertionData(convertions);
+  }
 
   function getItemList() {
     fetch(`http://localhost:3000/api/showItems`)
@@ -38,15 +50,29 @@ function CreateRecipe(props) {
       });
   }
 
+  function getUnitList() {
+    let allUnits = [];
+
+    units.forEach((unitType) => {
+      Object.keys(unitType).forEach((key) => {
+        //console.log(key, unitType[key].units, unitType[key].convertion);
+
+        const unityNames = unitType[key].units.map((unit) => unit.name);
+        allUnits.push(...unityNames);
+      });
+    });
+
+    const FilteredUnits = allUnits.filter((unit) => unit.toLowerCase());
+
+    return FilteredUnits;
+  }
+
   const handleInputChange = (event) => {
     setUnity("");
     const value = event.target.value;
     setInputValue(value);
     if (value) {
-      const newFilteredUnits = units.filter((unit) =>
-        unit.toLowerCase().includes(value.toLowerCase())
-      );
-      setFilteredUnits(newFilteredUnits);
+      setFilteredUnits(getUnitList());
     } else {
       setFilteredUnits([]);
     }
@@ -79,10 +105,33 @@ function CreateRecipe(props) {
     }
   };
 
-  function saveItem(event) {
+  function saveRecipe(event) {
     event.preventDefault();
     console.log(name, quantity, cost, unity);
     if (name && quantity && cost && unity && ingredients.length > 0) {
+      fetch("http://localhost:3000/api/addrecipe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name,
+          quantity: quantity,
+          cost: cost,
+          unity: unity,
+          items: ingredients,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Success Creating:", data.name);
+          props.setState(true);
+          props.setModal();
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("Cannot connect to the server. Try again later");
+        });
     } else {
       setIsEmpty(true);
       setShowErrorMessage(true);
@@ -93,7 +142,7 @@ function CreateRecipe(props) {
     event.preventDefault();
     setNewIngredient(!newIngredient);
 
-    console.log(ingredient, ingredientQuantity, ingredientUnity);
+    //console.log(ingredient, ingredientQuantity, ingredientUnity);
     if (ingredient && ingredientQuantity && ingredientUnity) {
       //TODO: handle the quantity and unity of the ingredient and save the cost responsively
       let newIngredient = {
@@ -108,15 +157,29 @@ function CreateRecipe(props) {
     }
   }
 
-  useEffect(
-    () => {
-      if (!ingredientsList) {
-        getItemList();
-      }
-      console.log(ingredients, ingredientsList);
-    },
-    { ingredients, ingredientsList }
-  );
+  function calculateCost() {
+    console.log("convertionData aaaaaaaaaaaa", convertionData);
+    let totalCost = 0;
+    ingredients.forEach((ingredient) => {
+      console.log(
+        "Item:",
+        ingredientsList.find((item) => item._id === ingredient._id),
+        "Ingrediente",
+        ingredient
+      );
+    });
+    //setCost();
+  }
+
+  useEffect(() => {
+    if (!ingredientsList) {
+      getItemList();
+      getConvertionData();
+      setUnitIngredients(getUnitList());
+    }
+    console.log(ingredients, ingredientsList);
+    calculateCost();
+  }, [ingredients, ingredientsList]);
 
   return (
     <div className="text-black">
@@ -146,7 +209,7 @@ function CreateRecipe(props) {
                   type="number"
                   id="quantity"
                   value={quantity}
-                  onChange={(e) => handleValueChange(e)}
+                  onChange={(e) => handleValueChange(e, setQuantity)}
                 />
                 <label htmlFor="cost">Unity</label>
 
@@ -220,7 +283,7 @@ function CreateRecipe(props) {
                         }
                       />
                       <select
-                        value={ingredientUnity}
+                        value={ingredientUnity ? ingredientUnity : ""}
                         id="unity"
                         className="w-full"
                         onChange={({ target }) => {
@@ -230,6 +293,8 @@ function CreateRecipe(props) {
                         <option value="" disabled hidden>
                           Select an unit
                         </option>
+                        //TODO: display the units that are compatible with the
+                        ingredient
                         {unitIngredients &&
                           unitIngredients.map((unit) => (
                             <option key={unit} value={unit}>
@@ -240,7 +305,9 @@ function CreateRecipe(props) {
                     </>
                   )}
                   <button
-                    className="p-1 mx-2 bg-green-500 text-white text-nowrap mr-5"
+                    className={`p-1 mx-2 bg-green-500 text-white text-nowrap mr-5 ${
+                      isEmpty && !quantity ? "border border-red-500" : ""
+                    }`}
                     onClick={(event) => addIngredient(event)}
                   >
                     {`${!newIngredient ? "Add new" : "Save"} ingredient`}
@@ -249,10 +316,11 @@ function CreateRecipe(props) {
                 {ingredients.length > 0
                   ? ingredients.map((ingredient, index) => (
                       <h2 key={index + "i"} className="pt-1">
-                        {" - " +
+                        {"=> " +
                           ingredient.name +
-                          " " +
+                          " - " +
                           ingredient.quantity +
+                          " " +
                           ingredient.unity}
                       </h2>
                     ))
@@ -268,11 +336,19 @@ function CreateRecipe(props) {
                   min="0"
                   id="cost"
                   value={cost}
-                  onChange={handleValueChange}
+                  onChange={(e) => handleValueChange(e, setCost)}
+                  //disabled={true}
                 />
               </div>
+              <div className="text-xs">
+                Custo calculado dinamicamente de acordo com os ingredientes e
+                suas quantidades
+              </div>
               <div className="flex gap-1 mt-2">
-                <button className="bg-green-500 text-white" onClick={saveItem}>
+                <button
+                  className="bg-green-500 text-white"
+                  onClick={saveRecipe}
+                >
                   Create
                 </button>
                 <button

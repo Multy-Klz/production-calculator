@@ -1,8 +1,8 @@
 import React from "react";
 import DeletePopup from "./DeletePopup";
 import { useState } from "react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 import EditItem from "./EditItem";
 function ItemsTable({ props }) {
@@ -10,22 +10,20 @@ function ItemsTable({ props }) {
   const [item, setItem] = useState(null);
   const [deleteItem, setDeleteItem] = useState(false);
 
-  function changeModal() { 
+  function changeModal() {
     setEdit(!edit);
   }
 
   const handleDelete = async (item) => {
     setDeleteItem(true);
-    setItem(item)
+    setItem(item);
   };
 
   const handleEdit = async (item) => {
     setEdit(true);
-    setItem(item)
-    console.log('Editando item:', item.name);
-
-};
-
+    setItem(item);
+    console.log("Editando item:", item.name);
+  };
 
   return (
     <div className="items-container flex justify-center p-5">
@@ -49,9 +47,18 @@ function ItemsTable({ props }) {
                 <td className="border px-4 py-2">R$ {item.cost}</td>
                 <td className="border px-4 py-2">
                   <div className="flex flex-row gap-1">
-
-                  <button  className="bg-blue-500 text-white px-2 py-1" onClick={() => handleEdit(item)}><FontAwesomeIcon icon={faPencil} className="  px-2"/></button>
-                  <button  className="bg-red-500 text-white px-2 py-1" onClick={() => handleDelete(item)}><FontAwesomeIcon icon={faTrash} className="  px-2"/></button>
+                    <button
+                      className="bg-blue-500 text-white px-2 py-1"
+                      onClick={() => handleEdit(item)}
+                    >
+                      <FontAwesomeIcon icon={faPencil} className="  px-2" />
+                    </button>
+                    <button
+                      className="bg-red-500 text-white px-2 py-1"
+                      onClick={() => handleDelete(item)}
+                    >
+                      <FontAwesomeIcon icon={faTrash} className="  px-2" />
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -59,8 +66,16 @@ function ItemsTable({ props }) {
           </tbody>
         </table>
       </div>
-      {edit ? <EditItem item={item} setModal={changeModal} /> : ''}
-      {deleteItem ? < DeletePopup setDeleteItem={setDeleteItem} item={item} /> : ''}
+      {edit ? <EditItem item={item} setModal={changeModal} /> : ""}
+      {deleteItem ? (
+        <DeletePopup
+          setDelete={setDeleteItem}
+          objectToDelete={item}
+          param={"deleteitem"}
+        />
+      ) : (
+        ""
+      )}
     </div>
   );
 }
